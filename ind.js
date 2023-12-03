@@ -8,17 +8,17 @@ const client = new Client();
 app.use(bodyParser.json());
 
 let base64QR = ''; // Variável global para armazenar a base64 do QR Code
+let qrUpdateCount = 0; // Contador de atualizações do QR Code
 
-function generateAndSetQR() {
-    client.on('qr', async (qr) => {
-        try {
-            base64QR = await generateBase64QR(qr);
-            console.log('QR Code base64:', base64QR);
-        } catch (error) {
-            console.error('Erro ao gerar QR Code base64:', error.message);
-        }
-    });
-}
+client.on('qr', async (qr) => {
+    try {
+        base64QR = await generateBase64QR(qr);
+        qrUpdateCount += 1; // Incrementa o contador de atualizações
+        console.log('QR Code base64:', base64QR);
+    } catch (error) {
+        console.error('Erro ao gerar QR Code base64:', error.message);
+    }
+});
 
 client.on('ready', () => {
     console.log('Client is ready!');
@@ -26,17 +26,9 @@ client.on('ready', () => {
 
 client.initialize();
 
-// Gera e define o QR Code inicial
-generateAndSetQR();
-
-// Atualiza o QR Code a cada 2 minutos
-setInterval(() => {
-    generateAndSetQR();
-}, 2 * 60 * 1000); // 2 minutos em milissegundos
-
-app.get('/', (req, res) => {
-    // Rota para enviar a página HTML com o código QR
-    const htmlContent = `
+// Função para gerar o HTML com o contador
+function generateHtmlWithCounter() {
+    return `
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -46,6 +38,7 @@ app.get('/', (req, res) => {
         </head>
         <body>
             <h1>QR Code Viewer</h1>
+            <p>Atualizações do QR Code: ${qrUpdateCount}</p>
             <img id="qrCodeImage" alt="QR Code" src="data:image/svg+xml;base64,${base64QR}">
             <form action="/enviar-mensagem" method="post">
                 <label for="numero">Número:</label>
@@ -57,7 +50,10 @@ app.get('/', (req, res) => {
         </body>
         </html>
     `;
-    res.send(htmlContent);
+}
+
+app.get('/', (req, res) => {
+    res.send(generateHtmlWithCounter());
 });
 
 app.post('/enviar-mensagem', async (req, res) => {
@@ -97,7 +93,15 @@ async function generateBase64QR(qrData) {
     return Buffer.from(qrcode.svg()).toString('base64');
 }
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 80; // Use a porta 80 como padrão
 app.listen(PORT, () => {
     console.log(`Servidor iniciado na porta ${PORT}`);
 });
+
+// Atualiza o QR Code e o HTML a cada 2 minutos
+setInterval(() => {
+    client.emit('qr', ''); // Dispara o evento 'qr' para gerar um novo QR Code
+    app.get('/', (req, res) => {
+        res.send(generateHtmlWithCounter());
+    });
+}, 2 * 60 * 1000); // 2 minutos em milissegundos
