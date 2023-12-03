@@ -9,20 +9,30 @@ app.use(bodyParser.json());
 
 let base64QR = ''; // Variável global para armazenar a base64 do QR Code
 
-client.on('qr', async (qr) => {
-    try {
-        base64QR = await generateBase64QR(qr);
-        console.log('QR Code base64:', base64QR);
-    } catch (error) {
-        console.error('Erro ao gerar QR Code base64:', error.message);
-    }
-});
+function generateAndSetQR() {
+    client.on('qr', async (qr) => {
+        try {
+            base64QR = await generateBase64QR(qr);
+            console.log('QR Code base64:', base64QR);
+        } catch (error) {
+            console.error('Erro ao gerar QR Code base64:', error.message);
+        }
+    });
+}
 
 client.on('ready', () => {
     console.log('Client is ready!');
 });
 
 client.initialize();
+
+// Gera e define o QR Code inicial
+generateAndSetQR();
+
+// Atualiza o QR Code a cada 2 minutos
+setInterval(() => {
+    generateAndSetQR();
+}, 2 * 60 * 1000); // 2 minutos em milissegundos
 
 app.get('/', (req, res) => {
     // Rota para enviar a página HTML com o código QR
@@ -87,7 +97,7 @@ async function generateBase64QR(qrData) {
     return Buffer.from(qrcode.svg()).toString('base64');
 }
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor iniciado na porta ${PORT}`);
 });
