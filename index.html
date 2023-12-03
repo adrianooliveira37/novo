@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Viewer</title>
+    <!-- Adicione os estilos conforme necessário -->
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #qr-code {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="qr-code-container">
+        <img id="qr-code" src="" alt="QR Code">
+    </div>
+
+    <script>
+        const qrCodeImg = document.getElementById('qr-code');
+
+        const eventSource = new EventSource('/qr-code-stream');
+
+        eventSource.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.qrCode) {
+                qrCodeImg.src = data.qrCode;
+            } else {
+                console.error('Erro ao obter QR code do servidor.');
+            }
+        };
+    </script>
+</body>
+</html>
