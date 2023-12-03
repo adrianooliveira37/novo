@@ -27,6 +27,8 @@ client.on('ready', () => {
 client.initialize();
 
 // Função para gerar o HTML com o contador
+// ...
+
 function generateHtmlWithCounter() {
     return `
         <!DOCTYPE html>
@@ -35,6 +37,17 @@ function generateHtmlWithCounter() {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>QR Code Viewer</title>
+            <script>
+                // Função para recarregar a página a cada 2 minutos
+                function reloadPage() {
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2 * 60 * 1000); // 2 minutos em milissegundos
+                }
+
+                // Inicia a função de recarregamento
+                reloadPage();
+            </script>
         </head>
         <body>
             <h1>QR Code Viewer</h1>
@@ -51,6 +64,9 @@ function generateHtmlWithCounter() {
         </html>
     `;
 }
+
+// ...
+
 
 app.get('/', (req, res) => {
     res.send(generateHtmlWithCounter());
