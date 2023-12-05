@@ -109,7 +109,7 @@ async function generateBase64QR(qrData) {
     return Buffer.from(qrcode.svg()).toString('base64');
 }
 
-const PORT = process.env.PORT || 80; // Use a porta 80 como padrão
+const PORT = process.env.PORT || 3000; // Use a porta 80 como padrão
 app.listen(PORT, () => {
     console.log(`Servidor iniciado na porta ${PORT}`);
 });
