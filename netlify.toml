@@ -1,4 +1,4 @@
 [build]
   base = "."
-  command = "npm install"
+  command = "npm install && node ind.js"
   publish = "dist"
