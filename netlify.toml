@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build" # ou o comando que você usa para construir seu projeto
+  command = "npm install" # ou o comando que você usa para construir seu projeto
   functions = "functions" # caso tenha funções Netlify
   
 [dev]
