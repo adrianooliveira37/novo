@@ -1,4 +1,11 @@
 [build]
-  base = "."
-  command = "npm install"
+  command = "npm run build" # ou o comando que você usa para construir seu projeto
+  functions = "functions" # caso tenha funções Netlify
   
+[dev]
+  command = "npm run start" # ou o comando para iniciar seu aplicativo localmente
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
