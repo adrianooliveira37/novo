@@ -3,7 +3,7 @@
   functions = "functions" # caso tenha funções Netlify
   
 [dev]
-  command = "npm run start" # ou o comando para iniciar seu aplicativo localmente
+  command = "node ind.js" # ou o comando para iniciar seu aplicativo localmente
 
 [[redirects]]
   from = "/*"
